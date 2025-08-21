@@ -54,7 +54,7 @@ function App() {
               <h3>🎵 OS1000 SHOWCASE REEL</h3>
               <p>[INITIALIZING STREAM...]</p>
               <a 
-                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" 
+                href="https://www.youtube.com/playlist?list=OLAK5uy_nwxlvSsjdmPqt5fMzvyTP-UnQ2zoscbCk" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="btn"

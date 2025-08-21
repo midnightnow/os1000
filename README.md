@@ -30,13 +30,15 @@ Visit the live demo and try these commands:
 - **Video**: Embedded YouTube integration
 - **Hosting**: Firebase Hosting
 
-## Attribution
+## Attribution & Creative Homage
 
-This project is inspired by and builds upon NUTO's excellent work:
+OS1000 is **an homage to the creativity of NUTO's "Operating System in 1000 Lines" and an exploration of the written and published form**. This project transforms the educational OS concept into an interactive musical experience while maintaining deep respect for the original educational content.
+
+**Original Work by NUTO:**
 - **"Operating System in 1000 Lines"**: [Read the Book](https://operating-system-in-1000-lines.vercel.app/)
 - **Original Source**: [NUTO's Repository](https://github.com/nuta/operating-system-in-1000-lines)
 
-OS1000 transforms the educational OS concept into an interactive musical experience while maintaining respect for the original educational content.
+We celebrate NUTO's innovative approach to teaching operating system concepts through practical implementation, extending this educational foundation into the realm of musical performance art.
 
 ## Development
 

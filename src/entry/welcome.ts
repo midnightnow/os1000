@@ -8,8 +8,8 @@ export function showWelcomeIfNeeded(render: (msg: string) => void) {
     render("Welcome from Lumina — type `help` or `play intro-os-overture` to begin.");
     gtagEvent('os1000_welcome_customized', {
       source: 'lunadarkside.com',
-      campaign: ctx.campaign,
-      content: ctx.content
+      campaign: ctx.campaign || '',
+      content: ctx.content || ''
     });
   }
 }

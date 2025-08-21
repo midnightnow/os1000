@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './TerminalPlayer.css'
+// VideoViewport imported in command files
+import { playCommand } from '../terminal/commands/play'
+import { catalogCommand } from '../terminal/commands/catalog'
+import { portalCommand } from '../terminal/commands/portal'
+import { streamCommand } from '../terminal/commands/stream'
+import { Breadcrumb } from './Breadcrumb'
+import { showWelcomeIfNeeded } from '../entry/welcome'
 
 type Track = {
   id: string
@@ -28,6 +35,7 @@ const TerminalPlayer: React.FC = () => {
   const [currentChapter, setCurrentChapter] = useState(0)
   const [, setKernelState] = useState<'booting' | 'running' | 'panic'>('running')
   const [activeVideo, setActiveVideo] = useState<null | { url: string; id: string; title: string }>(null)
+  const [viewport, setViewport] = useState<React.ReactNode | null>(null)
   const [audioContextInitialized, setAudioContextInitialized] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
@@ -35,29 +43,33 @@ const TerminalPlayer: React.FC = () => {
   const historyEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    // Use hardcoded tracks for now until backend is deployed
+    // Show custom welcome if coming from Luna Darkside
+    showWelcomeIfNeeded(println);
+    
+    // OS1000 Complete Playlist - Homage to NUTO's "Operating System in 1000 Lines"
+    // A musical exploration of the written and published form
     const hardcodedTracks: Track[] = [
-      {id: 'intro-os-overture', title: 'Intro (The OS Overture)', length: '3:41', date: '2025-05-25', status: 'ONLINE', 
-       videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', thumbnail: '/thumbnails/intro-os-overture.jpg'},
-      {id: 'getting-started', title: 'Getting Started', length: '3:25', date: '2025-05-25', status: 'ONLINE',
-       videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', thumbnail: '/thumbnails/getting-started.jpg'},
-      {id: 'risc-v-101', title: 'RISC-V 101', length: '3:10', date: '2025-05-25', status: 'ONLINE',
-       videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', thumbnail: '/thumbnails/risc-v-101.jpg'},
-      {id: 'overview', title: 'Overview', length: '4:00', date: '2025-05-25', status: 'ONLINE',
-       videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', thumbnail: '/thumbnails/overview.jpg'},
-      {id: 'boot', title: 'Boot', length: '4:00', date: '2025-05-25', status: 'ONLINE',
-       videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', thumbnail: '/thumbnails/boot.jpg'},
-      {id: 'hello-world', title: 'Hello World!', length: '3:30', date: '2025-05-25', status: 'ONLINE',
-       videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', thumbnail: '/thumbnails/hello-world.jpg'},
-      {id: 'c-standard-library', title: 'C Standard Library', length: '3:45', date: '2025-05-25', status: 'ONLINE',
-       videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', thumbnail: '/thumbnails/c-standard-library.jpg'},
-      {id: 'kernel-panic', title: 'Kernel Panic', length: '4:12', date: '2025-05-25', status: 'ONLINE',
-       videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', thumbnail: '/thumbnails/kernel-panic.jpg'},
-      {id: 'exception', title: 'Exception', length: '3:58', date: '2025-05-25', status: 'ONLINE',
-       videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', thumbnail: '/thumbnails/exception.jpg'},
-      {id: 'memory-allocation', title: 'Memory Allocation', length: '4:15', date: '2025-05-25', status: 'ONLINE',
-       videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', thumbnail: '/thumbnails/memory-allocation.jpg'},
-      {id: 'process', title: 'Process', length: '3:52', date: '2025-05-25', status: 'ONLINE',
+      {id: '01', title: 'Track 01 - Boot Sequence', length: '4:00', date: '2025-05-25', status: 'ONLINE',
+       videoUrl: 'https://www.youtube.com/playlist?list=OLAK5uy_nwxlvSsjdmPqt5fMzvyTP-UnQ2zoscbCk&index=1', thumbnail: '/thumbnails/01.jpg'},
+      {id: '02', title: 'Track 02 - Hello World', length: '3:30', date: '2025-05-25', status: 'ONLINE',
+       videoUrl: 'https://www.youtube.com/playlist?list=OLAK5uy_nwxlvSsjdmPqt5fMzvyTP-UnQ2zoscbCk&index=2', thumbnail: '/thumbnails/02.jpg'},
+      {id: '03', title: 'Track 03 - Memory Management', length: '4:15', date: '2025-05-25', status: 'ONLINE',
+       videoUrl: 'https://www.youtube.com/playlist?list=OLAK5uy_nwxlvSsjdmPqt5fMzvyTP-UnQ2zoscbCk&index=3', thumbnail: '/thumbnails/03.jpg'},
+      {id: '04', title: 'Track 04 - Process Switching', length: '3:20', date: '2025-05-25', status: 'ONLINE',
+       videoUrl: 'https://www.youtube.com/playlist?list=OLAK5uy_nwxlvSsjdmPqt5fMzvyTP-UnQ2zoscbCk&index=4', thumbnail: '/thumbnails/04.jpg'},
+      {id: '05', title: 'Track 05 - System Calls', length: '4:30', date: '2025-05-25', status: 'ONLINE',
+       videoUrl: 'https://www.youtube.com/playlist?list=OLAK5uy_nwxlvSsjdmPqt5fMzvyTP-UnQ2zoscbCk&index=5', thumbnail: '/thumbnails/05.jpg'},
+      {id: '06', title: 'Track 06 - Interrupts', length: '3:55', date: '2025-05-25', status: 'ONLINE',
+       videoUrl: 'https://www.youtube.com/playlist?list=OLAK5uy_nwxlvSsjdmPqt5fMzvyTP-UnQ2zoscbCk&index=6', thumbnail: '/thumbnails/06.jpg'},
+      {id: '07', title: 'Track 07 - File System', length: '5:10', date: '2025-05-25', status: 'ONLINE',
+       videoUrl: 'https://www.youtube.com/playlist?list=OLAK5uy_nwxlvSsjdmPqt5fMzvyTP-UnQ2zoscbCk&index=7', thumbnail: '/thumbnails/07.jpg'},
+      {id: '08', title: 'Track 08 - Shell Interface', length: '3:40', date: '2025-05-25', status: 'ONLINE',
+       videoUrl: 'https://www.youtube.com/playlist?list=OLAK5uy_nwxlvSsjdmPqt5fMzvyTP-UnQ2zoscbCk&index=8', thumbnail: '/thumbnails/08.jpg'},
+      {id: '09', title: 'Track 09 - Device Drivers', length: '4:25', date: '2025-05-25', status: 'ONLINE',
+       videoUrl: 'https://www.youtube.com/playlist?list=OLAK5uy_nwxlvSsjdmPqt5fMzvyTP-UnQ2zoscbCk&index=9', thumbnail: '/thumbnails/09.jpg'},
+      {id: '10', title: 'Track 10 - Kernel Space', length: '3:45', date: '2025-05-25', status: 'ONLINE',
+       videoUrl: 'https://www.youtube.com/playlist?list=OLAK5uy_nwxlvSsjdmPqt5fMzvyTP-UnQ2zoscbCk&index=10', thumbnail: '/thumbnails/10.jpg'},
+      {id: '11', title: 'Track 11 - Virtual Memory', length: '4:50', date: '2025-05-25', status: 'ONLINE',
        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', thumbnail: '/thumbnails/process.jpg'},
       {id: 'page-table', title: 'Page Table', length: '3:33', date: '2025-05-25', status: 'ONLINE',
        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', thumbnail: '/thumbnails/page-table.jpg'},
@@ -240,6 +252,7 @@ const TerminalPlayer: React.FC = () => {
 
     clear: () => {
       setHistory([])
+      setViewport(null)
     },
 
     list: () => {
@@ -274,64 +287,8 @@ const TerminalPlayer: React.FC = () => {
       ])
     },
 
-    play: async (id?: string) => {
-      if (!id) {
-        println('Usage: play <track-id>')
-        println('Example: play kernel-panic')
-        return
-      }
-      
-      const track = tracks.find(t => t.id === id)
-      if (!track) {
-        println(`Track not found: ${id}`)
-        println('Use `list` to see available tracks')
-        return
-      }
-      
-      // Embed-first playback per contract
-      if (track.videoUrl) {
-        println(`🎥 Loading video: ${track.title}`)
-        println(`  Duration: ${track.length}`)
-        println(`  Type 'close' to exit video player`)
-        
-        // Normalize video URL to embed format with autoplay muted
-        let embedUrl = track.videoUrl
-        try {
-          if (embedUrl.includes('youtube.com/watch?v=') || embedUrl.includes('youtu.be/')) {
-            const videoId = embedUrl.includes('youtu.be/') 
-              ? embedUrl.split('youtu.be/')[1]?.split('?')[0]
-              : new URL(embedUrl).searchParams.get('v')
-            if (videoId) {
-              embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1`
-            }
-          } else if (embedUrl.includes('youtube.com/embed/')) {
-            // Already an embed URL, just add parameters
-            const url = new URL(embedUrl)
-            url.searchParams.set('autoplay', '1')
-            url.searchParams.set('mute', '1') 
-            url.searchParams.set('playsinline', '1')
-            url.searchParams.set('rel', '0')
-            url.searchParams.set('modestbranding', '1')
-            embedUrl = url.toString()
-          }
-        } catch (error) {
-          console.warn('Error processing video URL:', error)
-        }
-        
-        setActiveVideo({
-          url: embedUrl,
-          id: track.id,
-          title: track.title
-        })
-        
-        // Trigger visual effect
-        document.body.classList.add('os1000-playing')
-        setTimeout(() => document.body.classList.remove('os1000-playing'), 2000)
-      } else {
-        println(`❌ Video not available for: ${track.title}`)
-        println(`  View track on Lumina → https://lunadarkside.com/music`)
-        println(`  Duration: ${track.length}`)
-      }
+    play: async (...args: string[]) => {
+      await playCommand(args, setViewport, println)
     },
 
     status: async () => {
@@ -744,11 +701,9 @@ const TerminalPlayer: React.FC = () => {
     return '█'.repeat(filled) + '░'.repeat(empty)
   }
 
-  // Add portal navigation commands
+  // Add portal navigation commands with new implementations
   commands.portal = () => {
-    println('Opening Luna Darkside portal...')
-    println('https://lunadarkside.com')
-    window.open('https://lunadarkside.com', '_blank')
+    println(portalCommand())
   }
 
   commands.artist = () => {
@@ -758,9 +713,11 @@ const TerminalPlayer: React.FC = () => {
   }
 
   commands.catalog = () => {
-    println('Full catalog is curated on Lumina.')
-    println('Opening: https://lunadarkside.com/music')
-    window.open('https://lunadarkside.com/music', '_blank')
+    println(catalogCommand())
+  }
+
+  commands.stream = (...args: string[]) => {
+    println(streamCommand(args))
   }
 
   // Command allowlist for security
@@ -768,7 +725,7 @@ const TerminalPlayer: React.FC = () => {
     'help', 'clear', 'list', 'play', 'status', 'panic', 'syscall', 'memory', 'about',
     'learn', 'next', 'curriculum', 'boot', 'compile', 'visualize',
     'video', 'close', 'gallery', 'workbook', 'code', 'demo', 'debug',
-    'portal', 'artist', 'catalog'
+    'portal', 'artist', 'catalog', 'stream'
   ])
 
   const sanitizeInput = (input: string): string => {
@@ -844,12 +801,16 @@ const TerminalPlayer: React.FC = () => {
 
   return (
     <div className="terminal" role="application" aria-label="OS1000 Interactive Terminal">
+      <Breadcrumb />
       <div className="terminal-header">
         <span className="terminal-title">OS1000 TERMINAL</span>
         <span className="terminal-status" aria-live="polite">● CONNECTED</span>
       </div>
       
       <div className="terminal-body">
+        {/* Video Viewport above terminal */}
+        {viewport && <div className="mb-4">{viewport}</div>}
+        
         <div className="terminal-history" role="log" aria-label="Terminal output">
           {history.map((line, i) => (
             <div key={i} className="terminal-line" aria-live="polite">
