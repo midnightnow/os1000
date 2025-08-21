@@ -1,0 +1,101 @@
+:root {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --text-primary: #00ffff;
+  --text-secondary: #00ff00;
+  --text-muted: #888888;
+  --accent-primary: #ff00ff;
+  --accent-secondary: #ffff00;
+  --border-color: #00ffff;
+  --error-color: #ff0000;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Courier New', monospace;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Scanline effect */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 255, 0.03) 2px,
+    rgba(0, 255, 255, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+  animation: scanlines 10s linear infinite;
+}
+
+@keyframes scanlines {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 10px; }
+}
+
+/* Panic mode */
+.os1000-panic::before {
+  content: 'KERNEL PANIC – SYSTEM HALTED';
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 0, 0, 0.9);
+  color: #fff;
+  font: 700 2rem/1.2 monospace;
+  z-index: 9999;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  animation: panic-flash 0.5s infinite;
+}
+
+@keyframes panic-flash {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 1; }
+}
+
+/* Playing effect */
+.os1000-playing {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.2) hue-rotate(10deg); }
+}
+
+/* Syscall trace effect */
+.os1000-syscall {
+  animation: syscall-trace 0.8s ease-out;
+}
+
+@keyframes syscall-trace {
+  0% { filter: invert(0); }
+  50% { filter: invert(1) hue-rotate(90deg); }
+  100% { filter: invert(0); }
+}
+
+/* Blink animation */
+.blink {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0; }
+}
